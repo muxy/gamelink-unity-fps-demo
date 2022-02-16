@@ -1,0 +1,27 @@
+image: node:14
+
+pipelines:
+  default:
+    - step:
+        name: Build
+        script:
+          - npm install
+          - npm run build
+  branches:
+    master:
+      - step:
+          name: Build
+          script:
+            - npm install
+            - npm run build
+          artifacts:
+            - dist/**
+      - step:
+          name: Deploy Staging
+          deployment: Staging
+          script:
+            - pipe: atlassian/aws-s3-deploy:0.5.0
+              variables:
+                S3_BUCKET: mbt-ext-staging/$BITBUCKET_REPO_SLUG
+                ACL: public-read
+                LOCAL_PATH: dist
