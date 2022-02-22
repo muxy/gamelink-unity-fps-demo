@@ -1,5 +1,5 @@
 <template>
-  <div class="game-auth-container" :class="{ loaded }">
+  <div class="game-auth-container">
     <template v-if="pin">
       <div class="pin">
         PIN:
@@ -9,7 +9,7 @@
   </div>
 </template>
 
-<script lang="ts">
+<script lang="js">
 import { defineComponent, onMounted, ref } from "vue";
 
 import { useMEDKit } from "@/shared/hooks/use-medkit";
@@ -51,9 +51,9 @@ export default defineComponent({
     return {
       loaded,
       pin,
-      requestPIN,
+      requestPIN
     };
-  },
+  }
 });
 </script>
 
@@ -64,18 +64,17 @@ export default defineComponent({
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 0 0 20px 0;
+  padding: 0;
 
   .pin {
     display: flex;
     justify-content: center;
     align-items: center;
-    color: #fff;
-    font-size: 1em;
-    text-shadow: 0px 2px 3px rgba(0, 0, 0, 20%);
-    background: linear-gradient(#eb1b97, #a0127a);
+
+    background: #000;
     padding: 10px;
-    border-radius: 4px;
+
+    color: #fff;
 
     span {
       margin-left: 20px;

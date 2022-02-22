@@ -1,6 +1,6 @@
 <template>
-  <div class="voting">
-    <div class="instructions">
+  <div class="voting" :class="{ voted: countdownTimer === 0 }">
+    <div v-if="!voted" class="instructions">
       Vote to change the gravity!
 
       <div class="timer">
@@ -9,7 +9,11 @@
       </div>
     </div>
 
-    <div class="actions">
+    <div v-else class="instructions">
+      Your vote has been counted!
+    </div>
+
+    <div class="actions" v-if="!voted">
       <button :disabled="countdownTimer <= 0" @click="voteForOption(0)">
         Low Gravity
       </button>
@@ -21,7 +25,7 @@
   </div>
 </template>
 
-<script lang="ts">
+<script lang="js">
 import { defineComponent, onMounted, ref } from "vue";
 
 import { useMEDKit } from "@/shared/hooks/use-medkit";
@@ -36,11 +40,15 @@ export default defineComponent({
 
   setup(props) {
     const { medkit } = useMEDKit();
+    const voted = ref(false);
 
     const countdownTimer = ref(props.eventDuration);
 
-    const voteForOption = (option: number) => {
-      medkit.vote("gravityMode", option);
+    const voteForOption = (option) => {
+      medkit.vote("gravityMode", option).then(() => {
+        voted.value = true;
+        countdownTimer.value = 3;
+      });
     };
 
     const startCountdown = () => {
@@ -73,11 +81,25 @@ export default defineComponent({
   justify-content: center;
   align-items: center;
 
+  background-color: rgba(0, 0, 0, 0.9);
+
+  width: 100vw;
+  height: 100vh;
+
+  position: absolute;
+  top: 0;
+
+  &.voted {
+    display: none;
+  }
+
   .instructions {
     display: flex;
     flex-direction: column;
     align-items: center;
     text-align: center;
+
+    color: #fff;
 
     .timer {
       display: flex;
@@ -89,18 +111,16 @@ export default defineComponent({
       .clock {
         display: flex;
         align-items: center;
-        color: $log-yellow;
+        color: yellow;
         font-size: 1.4em;
       }
     }
   }
 
   .actions {
-    button {
-      &:first-of-type {
-        margin-right: 8px;
-      }
-    }
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 }
 </style>

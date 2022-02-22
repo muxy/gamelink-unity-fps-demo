@@ -1,25 +1,27 @@
 <template>
   <div class="config">
-    <div class="title">Configuration Pin</div>
-    <GameAuth />
+    <h1>Configuration PIN</h1>
+
+    <GameAuth v-if="loaded" />
   </div>
 </template>
 
-<script lang="ts">
+<script lang="js">
 import { defineComponent, ref } from "vue";
-
-import { isDebugUser } from "@/shared/debug";
-import globals from "@/shared/globals";
 
 import { provideMEDKit } from "@/shared/hooks/use-medkit";
 
-import GameAuth from "./components/GameAuth.vue";
+import globals from "@/shared/globals";
+
+import GameAuth from "@/config/components/GameAuth.vue";
 
 export default defineComponent({
-  name: "App",
-  components: { GameAuth },
+  components: {
+    GameAuth
+  },
 
   setup() {
+    // MEDKit is initialized and provided to the Vue provide/inject system
     const medkit = provideMEDKit({
       channelId: globals.TESTING_CHANNEL_ID,
       clientId: globals.CLIENT_ID,
@@ -28,78 +30,29 @@ export default defineComponent({
       userId: globals.TESTING_USER_ID,
     });
 
-    const isDebugging = ref(false);
-    const testingTimeout = ref(0);
+    const loaded = ref(false);
 
     medkit.loaded().then(() => {
-      isDebugging.value = isDebugUser(medkit.user.twitchID);
+      loaded.value = true;
     });
 
     return {
-      isDebugging,
-    };
+      loaded,
+    }
   },
 });
 </script>
 
 <style lang="scss">
-@import "~@/shared/scss/base.scss";
-@import "~@/shared/scss/colors.scss";
-@import "~@/shared/scss/utils.scss";
+@import "@/shared/scss/base.scss";
 
-#app {
+.config {
   display: flex;
-  justify-content: center;
-  background-color: #000;
-  padding: 24px;
+  flex-direction: column;
 
-  color: $log-white;
+  height: 100vh;
+  width: 100vw;
 
-  .config {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-
-    width: 50%;
-    background-color: rgba($log-purple, 0.5);
-    border: 1px solid $log-purple;
-    border-radius: 4px;
-    padding: 24px;
-
-    .title {
-      border-bottom: 1px solid #666;
-      margin: 0.5em 0 1em 0;
-      padding-bottom: 0.5em;
-
-      color: $log-pink;
-      font-weight: bold;
-      font-size: 1.4em;
-      opacity: 0.6;
-    }
-
-    .debugger {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-
-      h1 {
-        font-size: 0.8em;
-        color: $log-yellow;
-      }
-
-      .actions {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-
-        button {
-          margin-bottom: 8px;
-        }
-      }
-    }
-  }
+  padding: 1rem;
 }
 </style>
