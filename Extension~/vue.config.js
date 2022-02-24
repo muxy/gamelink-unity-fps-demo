@@ -8,19 +8,12 @@ const pkg = require("./package.json");
 const config = {
   publicPath: "./",
   pages: {
-    config: "./src/config/main.ts",
-    overlay: "./src/overlay/main.ts",
+    config: "./src/config/main.js",
+    overlay: "./src/overlay/main.js",
   },
 
   chainWebpack: config => {
     config.resolve.alias.set("@", path.resolve(__dirname, "src"));
-
-    // SVG Inliner
-    config.module
-      .rule("vue")
-      .use("vue-svg-inline-loader")
-      .loader("vue-svg-inline-loader")
-      .options({ addTitle: true });
 
     // Zip Plugin
     config
@@ -34,20 +27,6 @@ const config = {
       .options({
         fix: true,
       });
-
-    // Fix source maps in development mode
-    if (process.env.NODE_ENV === "development") {
-      config.devtool("eval-source-map");
-
-      config.output.devtoolModuleFilenameTemplate = info =>
-        info.resourcePath.match(/\.vue$/) &&
-        !info.identifier.match(/type=script/)
-          ? `webpack-generated:///${info.resourcePath}?${info.hash}`
-          : `webpack-code:///${info.resourcePath}`;
-
-      config.output.devtoolFallbackModuleFilenameTemplate =
-        "webpack:///[resource-path]?[hash]";
-    }
   },
 
   devServer: {
