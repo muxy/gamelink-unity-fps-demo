@@ -858,13 +858,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce56e4bb6dcdbf64899130cd26667f8c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GAMELINK_CLIENT_ID: a8h16mqk7xtlo11hkvq9acb1mls3cl
-  TurretPrefab: {fileID: 2015434656898269652, guid: e29d43f43cc5d82499dd9926e01847d3,
-    type: 3}
-  HoverbotPrefab: {fileID: 2015434656898269652, guid: 25a1b0efadb966e44889fce712c8ff8d,
-    type: 3}
-  HealthpackPrefab: {fileID: 2529580269645609534, guid: 9973c412032becb4ca116ca08be62edf,
-    type: 3}
+  GAMELINK_CLIENT_ID: 
 --- !u!1 &3472448582424461803
 GameObject:
   m_ObjectHideFlags: 0

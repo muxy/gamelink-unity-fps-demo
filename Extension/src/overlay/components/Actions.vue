@@ -20,7 +20,6 @@
 import { defineComponent } from "vue";
 
 import { useMEDKit } from "@/shared/hooks/use-medkit";
-import { useTwitchContext } from "@/shared/hooks/use-twitchcontext";
 
 import BitsInterface from "@/overlay/components/BitsInterface.vue";
 

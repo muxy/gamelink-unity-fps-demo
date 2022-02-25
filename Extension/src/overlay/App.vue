@@ -59,23 +59,19 @@ export default defineComponent({
     medkit.loaded().then(() => {
       loaded.value = true;
 
-      // listen for new event availability
       medkit.listen("start_poll", (data) => {
         if (data) {
           eventDuration.value = data.poll_duration;
         }
-
-        console.log("starting poll");
         isVoting.value = true;
       });
 
       medkit.listen("stop_poll", () => {
-        console.log("stopping poll");
         isVoting.value = false;
       });
 
       medkit.listen("game_over", () => {
-        isVoting.value = false; // hide voting
+        isVoting.value = false;
       });
     });
 
