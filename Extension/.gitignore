@@ -6,3 +6,4 @@ node_modules/
 dist/lib/
 .DS_Store
 .rpt2_cache/
+.vs/

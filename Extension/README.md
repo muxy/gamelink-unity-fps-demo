@@ -2,7 +2,7 @@
 
 ## Finish Setup
 
-1. Copy `.env.sample` to `.env`
+1. Copy `.env.sample` to `.env`. We do this because `.env` may contain secrets, so `.env` is added to our .gitignore.
 
 2. Edit the variable `VUE_APP_CLIENT_ID` to match the Twitch Extension Client ID you created on the [Twitch Dev Console](https://dev.twitch.tv).
 
