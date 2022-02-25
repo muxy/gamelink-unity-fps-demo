@@ -13,10 +13,6 @@
     <button @click="spawnMonster('turret')">Spawn Turret</button>
 
     <BitsInterface />
-
-    <button v-if="bitsEnabled" @click="spawnWithBits('turret')">
-      Spawn Turret for Bits
-    </button>
   </div>
 </template>
 
@@ -35,9 +31,6 @@ export default defineComponent({
 
   setup() {
     const { medkit } = useMEDKit();
-
-    // Initialize convenience wrapper for Twitch interactions.
-    const { bitsEnabled } = useTwitchContext();
 
     const sendDatastream = (event) => {
       medkit.signedRequest("POST", "datastream", event);
@@ -60,7 +53,6 @@ export default defineComponent({
     };
 
     return {
-      bitsEnabled,
       spawnMonster,
       spawnPickup,
     };
