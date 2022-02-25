@@ -20,13 +20,13 @@ public struct GameDatastreamEvent
 
 public struct GameChannelState
 {
-    public int enemiesKilled;
-    public int healthpacksPickedUp;
+    public int hoverBotsKilled;
+    public int turretsKilled;
 }
 
 public class GameLinkFPSBehaviour : MonoBehaviour
 {
-    public String GAMELINK_CLIENT_ID = "";
+    public String GAMELINK_EXTENSION_ID = "";
 
     private GameObject TurretPrefab;
     private GameObject HoverbotPrefab;
@@ -61,10 +61,13 @@ public class GameLinkFPSBehaviour : MonoBehaviour
     private SDK.DatastreamCallback DatastreamCB;
     private SDK.PollUpdateResponseCallback PollCB;
 
+    private SDK.PatchList PatchList;
+    private float PatchListSendTime = 0.2f;
+    private float PatchListSendTimer = 0.0f;
     private void SetupGameLink()
     {
-        GameLink = new SDK(GAMELINK_CLIENT_ID);
-
+        GameLink = new SDK(GAMELINK_EXTENSION_ID);
+        PatchList = new SDK.PatchList();
         Transport = new WebsocketTransport(true);
         Transport.OpenAndRunInStage(GameLink, Stage.Sandbox);
     }
@@ -129,17 +132,23 @@ public class GameLinkFPSBehaviour : MonoBehaviour
 
         TransactionCB = (Purchase) =>
         {
-            if (Purchase.SKU == "spawn-turret" && Player)
+            if (!Player) return;
+
+            System.Random R = new System.Random();
+            if (Purchase.SKU == "spawn-turret")
             {
-                Vector3 SpawnPos = Player.transform.position + Player.transform.forward * 10;
-                Instantiate(TurretPrefab, SpawnPos, Quaternion.identity);
+                GameObject Turret = Instantiate(TurretPrefab, RandomSpawnPositionNearby(R.Next(6, 18), R.Next(-5, 5)), Quaternion.identity);
+                Turret.GetComponent<Health>().MaxHealth += 200;
+            }
+            else if(Purchase.SKU == "spawn-hoverbot")
+            {
+                GameObject Hoverbot = Instantiate(HoverbotPrefab, RandomSpawnPositionNearby(R.Next(6, 18), R.Next(-5, 5)), Quaternion.identity);
+                Hoverbot.GetComponent<Health>().MaxHealth += 50;
             }
         };
 
         DatastreamCB = (Data) =>
         {
-            if (!Player) Debug.Log("GameLink no player found! Got datastream!");
-            
             foreach(DatastreamUpdate.Event Event in Data.Events)
             {
                 GameDatastreamEvent GameEvent = JsonUtility.FromJson<GameDatastreamEvent>(Event.Json);
@@ -147,48 +156,36 @@ public class GameLinkFPSBehaviour : MonoBehaviour
 
                 if (GameEvent.spawnMonsterType == "hoverbot")
                 {
-                    Vector3 SpawnPos = Player.transform.position + Player.transform.forward * R.Next(6, 18);
-                    SpawnPos.z += R.Next(-5, 5);
-                    GameObject Hoverbot = Instantiate(HoverbotPrefab, SpawnPos, Quaternion.identity);
+                    GameObject Hoverbot = Instantiate(HoverbotPrefab, RandomSpawnPositionNearby(R.Next(6, 18), R.Next(-5, 5)), Quaternion.identity);
                 }
                 if (GameEvent.spawnMonsterType == "turret")
                 {
-                    Vector3 SpawnPos = Player.transform.position + Player.transform.forward * R.Next(6, 18);
-                    SpawnPos.z += R.Next(-5, 5);
-                    GameObject Hoverbot = Instantiate(TurretPrefab, SpawnPos, Quaternion.identity);
+                    GameObject Hoverbot = Instantiate(TurretPrefab, RandomSpawnPositionNearby(R.Next(6, 18), R.Next(-5, 5)), Quaternion.identity);
                 }
 
 
                 if (GameEvent.spawnPickupType == "healthpack")
                 {
-                    Vector3 SpawnPos = Player.transform.position + Player.transform.forward * R.Next(4, 8);
-                    SpawnPos.z += R.Next(-5, 5);
-                    Instantiate(HealthpackPrefab, SpawnPos, Quaternion.identity);
+                    Instantiate(HealthpackPrefab, RandomSpawnPositionNearby(R.Next(4, 8), R.Next(-5, 5)), Quaternion.identity);
                 }
                 else if (GameEvent.spawnPickupType == "shotgun")
                 {
-                    Vector3 SpawnPos = Player.transform.position + Player.transform.forward * R.Next(4, 8);
-                    SpawnPos.z += R.Next(-5, 5);
-                    Instantiate(ShotgunPrefab, SpawnPos, Quaternion.identity);
+                    Instantiate(ShotgunPrefab, RandomSpawnPositionNearby(R.Next(4, 8), R.Next(-5, 5)), Quaternion.identity);
                 }
                 else if (GameEvent.spawnPickupType == "jetpack")
                 {
-                    Vector3 SpawnPos = Player.transform.position + Player.transform.forward * R.Next(4, 8);
-                    SpawnPos.z += R.Next(-5, 5);
-                    Instantiate(JetpackPrefab, SpawnPos, Quaternion.identity);
+                    Instantiate(JetpackPrefab, RandomSpawnPositionNearby(R.Next(4, 8), R.Next(-5, 5)), Quaternion.identity);
                 }
                 else if (GameEvent.spawnPickupType == "launcher")
                 {
-                    Vector3 SpawnPos = Player.transform.position + Player.transform.forward * R.Next(4, 8);
-                    SpawnPos.z += R.Next(-5, 5);
-                    Instantiate(LauncherPrefab, SpawnPos, Quaternion.identity);
+                    Instantiate(LauncherPrefab, RandomSpawnPositionNearby(R.Next(4, 8), R.Next(-5, 5)), Quaternion.identity);
                 }
             }
         };
 
         PollCB = (Poll) =>
         {
-            TotalVotesCountText.GetComponent<Text>().text = "Total Votes: " + GetPollSum(Poll.Results);
+            TotalVotesCountText.GetComponent<Text>().text = "Total Votes: " + Poll.Sum;
         };
 
         GameLink.OnTransaction(TransactionCB);
@@ -200,30 +197,12 @@ public class GameLinkFPSBehaviour : MonoBehaviour
         GameLink.AuthenticateWithPIN(PINInput.text, AuthCB);
     }
 
-    // why is poll.sum broken for 1 vote at 0 index? thats why we have this
-    private int GetPollSum(List<int> Results)
+    private Vector3 RandomSpawnPositionNearby(float FrontDistance, float Variation)
     {
-        int Sum = 0;
-        for (int i = 0; i < Results.Count; i++)
-        {
-            Sum += Results[i];
-        }
-        return Sum;
-    }
-    private int GetPollWinnerIndex(List<int> Results)
-    {
-        int Winner = 0;
-        int Index = -1;
-        for (int i = 0; i < Results.Count; i++)
-        {
-            if (Results[i] > Winner)
-            {
-                Winner = Results[i];
-                Index = i;
-            }
-        }
-
-        return Index;
+        if (!Player) return new Vector3(0, 0, 0);
+        Vector3 SpawnPos = Player.transform.position + Player.transform.forward * FrontDistance;
+        SpawnPos.z += Variation;
+        return SpawnPos;
     }
 
     private void CleanupPoll()
@@ -240,7 +219,7 @@ public class GameLinkFPSBehaviour : MonoBehaviour
         List<string> PollOptions = new List<string> { "Low", "High" };
         GameLink.CreatePoll("gravityMode", "Vote for the gravity mode!", PollOptions);
         GameLink.SubscribeToPoll("gravityMode");
-        GameLink.SendBroadcast("start_poll", "{}");
+        GameLink.SendBroadcast("start_poll", "{\"poll_duration\":\"" + PollDuration + "\"}");
         TotalVotesCountText.GetComponent<Text>().text = "Total Votes: 0";
         PollTimer = PollDuration;
         PollIsRunning = true;
@@ -254,7 +233,7 @@ public class GameLinkFPSBehaviour : MonoBehaviour
         GameLink.GetPoll("gravityMode", (Poll) =>
         {
             PlayerCharacterController Controller = Player.GetComponent<PlayerCharacterController>();
-            int Winner = GetPollWinnerIndex(Poll.Results);
+            int Winner = Poll.GetWinnerIndex();
             if (Winner != -1) // As long as there is a winner set the timer
             {
                 GravityModeTimer = GravityModeDuration;
@@ -275,20 +254,24 @@ public class GameLinkFPSBehaviour : MonoBehaviour
     }
     private void ClearState()
     {
-        State.enemiesKilled = 0;
-        State.healthpacksPickedUp = 0;
-        UpdateState();
+        State.hoverBotsKilled = 0;
+        State.turretsKilled = 0;
+        GameLink.SetState(SDK.STATE_TARGET_CHANNEL, JsonUtility.ToJson(State));
     }
-    private void UpdateState()
-    {
-        string json = JsonUtility.ToJson(State);
-        GameLink.SetState(SDK.STATE_TARGET_CHANNEL, json);
-        GameLink.SendBroadcast("channel_state_update", "{}");
-    }
+
     private void OnEnemyKilled(EnemyKillEvent Evt)
     {
-        State.enemiesKilled++;
-        UpdateState();
+        if (Evt.Enemy.name.ToLower().Contains("hoverbot"))
+        {
+            State.hoverBotsKilled++;
+        }
+        else if (Evt.Enemy.name.ToLower().Contains("turret"))
+        {
+            State.turretsKilled++;
+        }
+
+        PatchList.UpdateStateWithInteger("add", "/" + nameof(State.hoverBotsKilled), State.hoverBotsKilled);
+        PatchList.UpdateStateWithInteger("add", "/" + nameof(State.turretsKilled), State.turretsKilled);
     }    
 
     private void OnPlayerKilled(PlayerDeathEvent Evt)
@@ -300,15 +283,6 @@ public class GameLinkFPSBehaviour : MonoBehaviour
         GameLink.SendBroadcast("game_over", "{}");
     }
 
-    private void OnPickup(PickupEvent Evt)
-    {
-        if (Evt.Pickup.GetComponent<HealthPickup>() && Player.GetComponent<Health>().CurrentHealth < Player.GetComponent<Health>().MaxHealth)
-        {
-            State.healthpacksPickedUp++;
-            UpdateState();
-        }
-
-    }
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         if (scene.name == "MainScene")
@@ -325,7 +299,7 @@ public class GameLinkFPSBehaviour : MonoBehaviour
         VoteResultMessageText.GetComponent<Text>().text = "";
     }
 
-    private void HandleTimers()
+    private void HandleGameTimers()
     {
         if (!Player) return;
 
@@ -356,6 +330,20 @@ public class GameLinkFPSBehaviour : MonoBehaviour
         }
     }
 
+    private void HandlePatchListSend()
+    {
+        PatchListSendTimer -= Time.deltaTime;
+        if (PatchListSendTimer <= 0)
+        {
+            if (!PatchList.Empty())
+            {
+                GameLink.UpdateStateWithPatchList(SDK.STATE_TARGET_CHANNEL, PatchList);
+                PatchList.Clear();
+            }
+            PatchListSendTimer = PatchListSendTime;
+        }
+    }    
+
     void Start()
     {
         SetupFindPrivateObjects();
@@ -363,7 +351,6 @@ public class GameLinkFPSBehaviour : MonoBehaviour
         SetupGameLinkCallbacks();
         EventManager.AddListener<EnemyKillEvent>(OnEnemyKilled);
         EventManager.AddListener<PlayerDeathEvent>(OnPlayerKilled);
-        EventManager.AddListener<PickupEvent>(OnPickup);
         SceneManager.sceneLoaded += OnSceneLoaded;
 
         DontDestroyOnLoad(this.gameObject);
@@ -372,11 +359,20 @@ public class GameLinkFPSBehaviour : MonoBehaviour
     public void Update()
     {
         Transport.Update(GameLink);
-        HandleTimers();
+        HandleGameTimers();
+        HandlePatchListSend();
     }
 
     private void OnApplicationQuit()
     {
+        PrefabUtility.UnloadPrefabContents(TurretPrefab);
+        PrefabUtility.UnloadPrefabContents(HoverbotPrefab);
+        PrefabUtility.UnloadPrefabContents(HealthpackPrefab);
+        PrefabUtility.UnloadPrefabContents(ShotgunPrefab);
+        PrefabUtility.UnloadPrefabContents(JetpackPrefab);
+        PrefabUtility.UnloadPrefabContents(LauncherPrefab);
+
+        PatchList.FreeMemory();
         ClearState();
         Transport.Stop();
     }
