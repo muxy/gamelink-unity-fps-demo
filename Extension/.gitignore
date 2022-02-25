@@ -6,21 +6,5 @@ node_modules/
 dist/lib/
 .DS_Store
 .rpt2_cache/
-<<<<<<< HEAD
-.vs/
-=======
-package-lock.json
-.vscode/
-reports/
-coverage/
-node_modules/
-dist/lib/
-.DS_Store
-.rpt2_cache/
 .vs/
 .env
->>>>>>> f87a6c8 (Update .gitignore)
-=======
-.vs/
-.env
->>>>>>> aa3329b (Fix .gitignore again)
