@@ -15,6 +15,7 @@ Please view our [Quickstart Guide](https://docs.muxy.io/docs/quick-start) on how
 3. Drag and drop `GameLinkFPSBehaviour.cs` into `Assets\FPS\Scripts`.
 4. Open `Assets\FPS\Scenes\IntroMenu.unity` and drag `GameLink.prefab` into the hierarchy scene root.
 5. Enter your extension id into the component field `GAMELINK_EXTENSION_ID` on the GameLink prefab.
+6. Install the [GameLink Library](https://github.com/muxy/gamelink-unity) into the packages folder.
 
 ## Extension Setup
 
