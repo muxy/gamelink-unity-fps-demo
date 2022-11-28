@@ -2,7 +2,7 @@
 
 This demo is an example of Muxy GameLink integrated with the built in Unity FPS Microgame, it includes the game code and extension code.
 
-You can also refer to our [Unity FPS Demo Code Walkthrough](https://muxy.io/docs/unity-fps-demo-code-walkthrough) of this demo. The walkthrough explains as much of the code interaction as possible.
+You can also refer to our [Unity FPS Demo Code Walkthrough](https://docs.muxy.io/docs/unity-fps-demo-code-walkthrough) of this demo. The walkthrough explains as much of the code interaction as possible.
 
 ## Requirements
 
