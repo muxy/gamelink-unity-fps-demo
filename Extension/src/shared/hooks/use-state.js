@@ -7,9 +7,9 @@ export function provideState(medkit) {
 
   provide(StateInjectionKey, state);
 
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     medkit.loaded().then(() => {
-      medkit.getChannelState().then(st => {
+      medkit.getChannelState().then((st) => {
         try {
           Object.assign(state, channelStateFromNetwork(st));
         } catch (err) {
@@ -19,7 +19,7 @@ export function provideState(medkit) {
         // Certain events will be broadcast automatically in response to
         // server actions. This event is sent whenever the channel state
         // is changed by the broadcaster.
-        medkit.listen("channel_state_update", st => {
+        medkit.listen("channel_state_update", (st) => {
           try {
             Object.assign(state, channelStateFromNetwork(st));
           } catch (err) {
@@ -45,6 +45,6 @@ export function useState() {
 export function channelStateFromNetwork(data) {
   return {
     hoverBotsKilled: data?.hoverBotsKilled || 0,
-    turretsKilled: data?.turretsKilled || 0
+    turretsKilled: data?.turretsKilled || 0,
   };
 }

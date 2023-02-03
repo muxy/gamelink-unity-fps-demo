@@ -54,7 +54,7 @@ export function provideMEDKit(options) {
 
   const setup = {
     clientID: options.clientId,
-    transactionsEnabled: !!options.transactionsEnabled
+    transactionsEnabled: !!options.transactionsEnabled,
   };
 
   if (options.uaString) {

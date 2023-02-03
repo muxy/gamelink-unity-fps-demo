@@ -40,7 +40,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-@import "~@/shared/scss/base.scss";
+@import "@/shared/scss/base.scss";
 
 .bits-interface {
   display: flex;
