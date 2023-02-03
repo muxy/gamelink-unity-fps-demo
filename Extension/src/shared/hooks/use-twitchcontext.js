@@ -12,14 +12,14 @@ export function useTwitchContext(medkit) {
   const state = reactive({
     arePlayerControlsVisible: false,
     bitsEnabled: false,
-    requestIdShare
+    requestIdShare,
   });
 
   const bitsEnabled = ref(window?.Twitch?.ext?.features?.isBitsEnabled);
 
   if (!loaded) {
     if (window.Twitch) {
-      medkit.onContextUpdate(ctx => {
+      medkit.onContextUpdate((ctx) => {
         state.arePlayerControlsVisible = ctx.arePlayerControlsVisible;
       });
 
@@ -27,8 +27,8 @@ export function useTwitchContext(medkit) {
         bitsEnabled.value = window.Twitch.ext.features.isBitsEnabled;
       });
 
-      window.Twitch.ext.bits.onTransactionComplete(tx => {
-        transactionCallbacks.forEach(cb => cb(tx));
+      window.Twitch.ext.bits.onTransactionComplete((tx) => {
+        transactionCallbacks.forEach((cb) => cb(tx));
       });
     }
 
@@ -42,6 +42,6 @@ export function useTwitchContext(medkit) {
   };
 
   return {
-    ...toRefs(state)
+    ...toRefs(state),
   };
 }

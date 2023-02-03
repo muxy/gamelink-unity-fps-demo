@@ -58,7 +58,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-@import "~@/shared/scss/base.scss";
+@import "@/shared/scss/base.scss";
 
 .game-auth-container {
   display: flex;

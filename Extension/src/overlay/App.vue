@@ -10,9 +10,7 @@
       </div>
     </div>
 
-    <div v-else>
-      Loading...
-    </div>
+    <div v-else>Loading...</div>
   </div>
 
   <PollVote v-if="isVoting" :eventDuration="eventDuration" />

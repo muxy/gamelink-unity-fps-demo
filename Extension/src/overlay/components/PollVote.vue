@@ -9,9 +9,7 @@
       </div>
     </div>
 
-    <div v-else class="instructions">
-      Your vote has been counted!
-    </div>
+    <div v-else class="instructions">Your vote has been counted!</div>
 
     <div class="actions" v-if="!voted">
       <button :disabled="countdownTimer <= 0" @click="voteForOption(0)">
@@ -73,7 +71,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-@import "~@/shared/scss/base.scss";
+@import "@/shared/scss/base.scss";
 
 .voting {
   display: flex;

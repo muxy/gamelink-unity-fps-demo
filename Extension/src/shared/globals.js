@@ -17,14 +17,14 @@
  * @type Globals
  **/
 const g = {
-  ANALYTICS: process.env.VUE_APP_ANALYTICS,
-  CLIENT_ID: process.env.VUE_APP_CLIENT_ID,
-  PRODUCTION: process.env.NODE_ENV === "production",
-  UA_STRING: process.env.VUE_APP_UA_STRING,
+  ANALYTICS: import.meta.env.VITE_ANALYTICS,
+  CLIENT_ID: import.meta.env.VITE_CLIENT_ID,
+  PRODUCTION: import.meta.env.NODE_ENV === "production",
+  UA_STRING: import.meta.env.VITE_UA_STRING,
 
-  TESTING_CHANNEL_ID: process.env.VUE_APP_TESTING_CHANNEL_ID,
-  TESTING_USER_ID: process.env.VUE_APP_TESTING_USER_ID,
-  TESTING_PURCHASABLE_ITEMS: process.env.VUE_APP_TESTING_PURCHASABLE_ITEMS
+  TESTING_CHANNEL_ID: import.meta.env.VITE_TESTING_CHANNEL_ID,
+  TESTING_USER_ID: import.meta.env.VITE_TESTING_USER_ID,
+  TESTING_PURCHASABLE_ITEMS: import.meta.env.VITE_TESTING_PURCHASABLE_ITEMS,
 };
 
 export default g;

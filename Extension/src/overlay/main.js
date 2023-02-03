@@ -8,17 +8,17 @@ window.MEDKIT_PURCHASABLE_ITEMS = [
     displayName: "Spawn Extra HP Hoverbot",
     cost: {
       amount: 50,
-      type: "test-cost"
-    }
+      type: "test-cost",
+    },
   },
   {
     sku: "spawn-turret",
     displayName: "Spawn Extra HP Turret",
     cost: {
       amount: 100,
-      type: "test-cost"
-    }
-  }
+      type: "test-cost",
+    },
+  },
 ];
 
 createApp(App).mount("#app");
